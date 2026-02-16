@@ -1,167 +1,93 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard | Bienestar Campus</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #a8edea, #fed6e3);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+{% extends 'base.html' %}
 
-        .dashboard-container {
-            background: white;
-            width: 900px;
-            max-width: 95%;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
+{% block title %}Dashboard | Bienestar Campus{% endblock %}
 
-        h1 {
-            text-align: center;
-            color: #2d6a4f;
-            margin-bottom: 10px;
-        }
+{% block page_name %}Inicio{% endblock %}
 
-        p.subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-        }
+{% block content %}
 
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-        }
+<!-- ===== BANNER ===== -->
+<div class="banner">
+    <h2>"Cada día es una nueva oportunidad"</h2>
+    <p>Recuerda: tu bienestar es una prioridad 💚</p>
+</div>
 
-        .card {
-            background: #f8fdfc;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        }
+<!-- ===== GRID ===== -->
+<div class="grid">
+    <!-- REGISTRO EMOCIÓN -->
+    <div class="card">
+        <h3>🧠 Registro de Emoción</h3>
 
-        .card h2 {
-            margin-top: 0;
-            color: #40916c;
-            font-size: 20px;
-        }
+        <form method="post">
+            {% csrf_token %}
+            <label>Emoción</label>
+            <select name="emocion">
+                <option>Selecciona una emoción</option>
+                <option>Feliz</option>
+                <option>Triste</option>
+                <option>Emocionado/a</option>
+                <option>Angustiado/a</option>
+                <option>Desepcionado/a</option>
+                <option>Extraño/a</option>
+            </select>
 
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: 600;
-            color: #444;
-        }
+            <label>Intensidad (1 a 5)</label>
+            <select name="intensidad">
+                <option>Selecciona intensidad</option>
+                <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+            </select>
 
-        select, input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            margin-top: 5px;
-            font-size: 14px;
-        }
+            <label>Cuéntanos un poco más!!</label>
+            <textarea name="descripcion" rows="3"></textarea>
 
-        button {
-            margin-top: 20px;
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            border: none;
-            background: #2d6a4f;
-            color: white;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background: #1b4332;
-        }
-
-        .logout {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .logout a {
-            color: #d00000;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-    </style>
-</head>
-<body>
-
-<div class="dashboard-container">
-    <h1>🌿 Bienestar Campus</h1>
-    <p class="subtitle">Hola {{ request.user.email }}, cuida tu bienestar hoy</p>
-
-    <div class="cards">
-
-        <!-- ===============================
-             ESTADO DE ÁNIMO
-        ================================ -->
-        <div class="card">
-            <h2>😊 Estado de Ánimo</h2>
-
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="guardar_animo">
-
-                <label>¿Cómo te sientes hoy?</label>
-                <select name="estado_animo" required>
-                    <option value="">Selecciona una opción</option>
-                    {% for estado in estados_animo %}
-                        <option value="{{ estado.id }}">{{ estado.descripcion }}</option>
-                    {% endfor %}
-                </select>
-
-                <button type="submit">Guardar estado</button>
-            </form>
-        </div>
-
-        <!-- ===============================
-             HÁBITOS
-        ================================ -->
-        <div class="card">
-            <h2>🏃 Registro de Hábitos</h2>
-
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="guardar_habito">
-
-                <label>Hábito</label>
-                <select name="habito" required>
-                    <option value="">Selecciona un hábito</option>
-                    {% for h in habitos %}
-                        <option value="{{ h.id }}">{{ h.nombre }}</option>
-                    {% endfor %}
-                </select>
-
-                <label>Valor (ej: minutos / veces)</label>
-                <input type="number" name="valor" min="1" max="500" required>
-
-                <button type="submit">Guardar hábito</button>
-            </form>
-        </div>
-
+            <button>Guardar emoción</button>
+        </form>
     </div>
 
-    <div class="logout">
-        <a href="/">Cerrar sesión</a>
+    <!-- RESUMEN -->
+    <div class="card">
+        <h3>📊 Resumen de Hoy</h3>
+
+        <div class="resumen-item">
+            <span>💪 Ejercicio</span>
+            <span>30 min</span>
+        </div>
+        <div class="resumen-item">
+            <span>💧 Agua</span>
+            <span>6 / 8 vasos</span>
+        </div>
+        <div class="resumen-item">
+            <span>😴 Sueño</span>
+            <span>7.5 hrs</span>
+        </div>
+
+        <a href="{% url 'habitos' %}">
+            <button class="btn-habitos">Registrar más hábitos</button>
+        </a>
     </div>
 </div>
 
-</body>
-</html>
+<!-- ===== ACTIVIDADES ===== -->
+<div class="actividades">
+    <h3>✨ Actividades recomendadas para ti</h3>
+
+    <div class="actividades-grid">
+        <div class="actividad act1">🧘 Meditación<br><small>5 min respiración</small></div>
+        <div class="actividad act2">✍️ Escribe<br><small>Expresa tus ideas</small></div>
+        <div class="actividad act3">🚶 Camina<br><small>15 min al aire libre</small></div>
+    </div>
+</div>
+
+<!-- ===== ACCESOS ===== -->
+<div class="accesos">
+    <a href="{% url 'estadistica' %}" style="text-decoration: none; color: inherit;">
+        <div class="acceso">📊 Ver Estadísticas</div>
+    </a>
+    <a href="{% url 'diario' %}" style="text-decoration: none; color: inherit;">
+        <div class="acceso">📔 Mi Diario</div>
+    </a>
+    <div class="acceso">📚 Recursos</div>
+    <div class="acceso">🏆 Mis Logros</div>
+</div>
+
+{% endblock %}

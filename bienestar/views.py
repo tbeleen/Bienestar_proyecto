@@ -4,12 +4,14 @@ from django.contrib.auth import get_user_model
 from django.contrib import messages
 from .models import Perfil
 from datetime import date
+from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from .models import (
-    EstadoAnimo,
-    RegistroEstadoAnimo,
     Habito,
-    RegistroHabito
+    RegistroEmocion,
+    RegistroHabito,
+    Diario,
+    Emocion
 )
 
 User = get_user_model()
@@ -92,55 +94,108 @@ def login_view(request):
 
     return render(request, "login.html")
 
-from django.contrib.auth.decorators import login_required
-
-
 @login_required
 def dashboard_view(request):
-    estados_animo = EstadoAnimo.objects.all()
+    # Obtener emociones desde la BD (o usar datos de ejemplo si no tienes BD)
+    emociones = Emocion.objects.all()
+    
+    # Si no tienes BD aún, usa esto temporalmente:
+    # emociones = [
+    #     {'id': 1, 'nombre': 'Feliz'},
+    #     {'id': 2, 'nombre': 'Triste'},
+    #     {'id': 3, 'nombre': 'Emocionado/a'},
+    #     {'id': 4, 'nombre': 'Angustiado/a'},
+    #     {'id': 5, 'nombre': 'Decepcionado/a'},
+    #     {'id': 6, 'nombre': 'Extraño/a'},
+    # ]
+
+    if request.method == "POST":
+        # ===============================
+        # GUARDAR EMOCIÓN
+        # ===============================
+        if "guardar_emocion" in request.POST:
+            emocion_id = request.POST.get("emocion")
+            intensidad = request.POST.get("intensidad")
+            comentario = request.POST.get("comentario", "")
+
+            # Validaciones
+            if not emocion_id or emocion_id == "":
+                messages.error(request, "Por favor selecciona una emoción")
+            elif not intensidad or intensidad == "":
+                messages.error(request, "Por favor selecciona una intensidad")
+            else:
+                try:
+                    # Descomentar cuando tengas BD lista:
+                    RegistroEmocion.objects.create(
+                        usuario=request.user,
+                        emocion_id=int(emocion_id),
+                        intensidad=int(intensidad),
+                        comentario=comentario
+                    )
+                    messages.success(request, "¡Emoción registrada exitosamente! 💚")
+                    
+                    # Para modo demo sin BD:
+                    # messages.info(request, "Modo demo - La emoción no se guardó (sin BD)")
+                    
+                except Exception as e:
+                    messages.error(request, f"Error al guardar: {str(e)}")
+
+            return redirect("dashboard")
+
+    return render(request, "dashboard.html", {
+        "emociones": emociones,
+    })
+
+@login_required
+def registro_habitos(request):
     habitos = Habito.objects.all()
 
     if request.method == "POST":
+        habito_id = request.POST.get("habito")
+        valor = request.POST.get("valor")
 
-        # ===============================
-        # GUARDAR ESTADO DE ÁNIMO
-        # ===============================
-        if "guardar_animo" in request.POST:
-            estado_id = request.POST.get("estado_animo")
+        if habito_id and valor:
+            habito = Habito.objects.filter(id=habito_id).first()
 
-            if estado_id:
-                estado = EstadoAnimo.objects.filter(id=estado_id).first()
-                if estado:
-                    RegistroEstadoAnimo.objects.create(
-                        usuario=request.user,
-                        estado_animo=estado
-                    )
+            if habito:
+                RegistroHabito.objects.create(
+                    usuario=request.user,
+                    habito=habito,
+                    fecha=date.today(),
+                    valor=int(valor)
+                )
 
-            return redirect("dashboard")
+        return redirect("registro_habitos")
 
-        # ===============================
-        # GUARDAR HÁBITO
-        # ===============================
-        if "guardar_habito" in request.POST:
-            habito_id = request.POST.get("habito")
-            valor = request.POST.get("valor")
-
-            if habito_id and valor:
-                habito = Habito.objects.filter(id=habito_id).first()
-
-                if habito:
-                    RegistroHabito.objects.create(
-                        usuario=request.user,
-                        habito=habito,
-                        fecha=date.today(),
-                        valor=int(valor)
-                    )
-
-            return redirect("dashboard")
-
-    context = {
-        "estados_animo": estados_animo,
+    return render(request, "habitos.html", {
         "habitos": habitos
-    }
+    })
 
-    return render(request, "dashboard.html", context)
+@login_required
+def estadistica_view(request):
+    return render(request, "estadistica.html")
+
+
+@login_required
+def recursos_view(request):
+    return render(request, "recursos.html")
+
+
+@login_required
+def diario(request):
+    if request.method == 'POST':
+        texto = request.POST.get('contenido')
+
+        if texto:
+            Diario.objects.create(
+                usuario=request.user,
+                contenido=texto
+            )
+            return redirect('diario')  # vuelve al diario
+
+    return render(request, 'diario.html')
+
+
+@login_required
+def perfil(request):
+    return render(request, 'perfil.html')

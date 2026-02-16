@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro</title>
+
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+            background: linear-gradient(135deg, #667eea, #764ba2);
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            width: 100%;
+            max-width: 420px;
+            border-radius: 14px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 12px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-wrapper input {
+            padding-right: 30px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 40%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 12px;
+            color: #555;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            border: none;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #5a67d8;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Crear cuenta 🧑‍🎓</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label>Correo institucional</label>
+        <input type="email" name="email" placeholder="correo@duocuc.cl" required>
+
+        <label>Género</label>
+        <select name="genero" required>
+            <option value="">Seleccione</option>
+            <option value="F">Femenino</option>
+            <option value="M">Masculino</option>
+            <option value="O">Otro</option>
+        </select>
+
+        <label>Fecha de nacimiento</label>
+        <input type="date" name="fecha_nacimiento" required>
+
+        <label>Contraseña</label>
+        <div class="password-wrapper">
+            <input type="password" id="password" name="password" required>
+            <span class="toggle-password" onclick="togglePassword('password')">👁️</span>
+        </div>
+
+        <label>Confirmar contraseña</label>
+        <div class="password-wrapper">
+            <input type="password" id="password2" name="password2" required>
+            <span class="toggle-password" onclick="togglePassword('password2')">👁️</span>
+        </div>
+
+        <button type="submit">Registrarse</button>
+    </form>
+
+    <div class="login-link">
+        ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión</a>
+    </div>
+</div>
+
+<script>
+    function togglePassword(id) {
+        const input = document.getElementById(id);
+        input.type = input.type === "password" ? "text" : "password";
+    }
+</script>
+
+</body>
+</html>

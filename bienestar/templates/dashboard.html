@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard | Bienestar Campus</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dashboard-container {
+            background: white;
+            width: 900px;
+            max-width: 95%;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d6a4f;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: #f8fdfc;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #40916c;
+            font-size: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        select, input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            background: #2d6a4f;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #1b4332;
+        }
+
+        .logout {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .logout a {
+            color: #d00000;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    <h1>🌿 Bienestar Campus</h1>
+    <p class="subtitle">Hola {{ request.user.email }}, cuida tu bienestar hoy</p>
+
+    <div class="cards">
+
+        <!-- ===============================
+             ESTADO DE ÁNIMO
+        ================================ -->
+        <div class="card">
+            <h2>😊 Estado de Ánimo</h2>
+
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="guardar_animo">
+
+                <label>¿Cómo te sientes hoy?</label>
+                <select name="estado_animo" required>
+                    <option value="">Selecciona una opción</option>
+                    {% for estado in estados_animo %}
+                        <option value="{{ estado.id }}">{{ estado.descripcion }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">Guardar estado</button>
+            </form>
+        </div>
+
+        <!-- ===============================
+             HÁBITOS
+        ================================ -->
+        <div class="card">
+            <h2>🏃 Registro de Hábitos</h2>
+
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="guardar_habito">
+
+                <label>Hábito</label>
+                <select name="habito" required>
+                    <option value="">Selecciona un hábito</option>
+                    {% for h in habitos %}
+                        <option value="{{ h.id }}">{{ h.nombre }}</option>
+                    {% endfor %}
+                </select>
+
+                <label>Valor (ej: minutos / veces)</label>
+                <input type="number" name="valor" min="1" max="500" required>
+
+                <button type="submit">Guardar hábito</button>
+            </form>
+        </div>
+
+    </div>
+
+    <div class="logout">
+        <a href="/">Cerrar sesión</a>
+    </div>
+</div>
+
+</body>
+</html>
